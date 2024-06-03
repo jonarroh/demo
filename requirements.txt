@@ -1,5 +1,4 @@
 beautifulsoup4
-chromedrivermanager
 lxml
 matplotlib
 numpy
