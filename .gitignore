@@ -1,0 +1,15 @@
+#pycache
+*.pyc
+
+# env
+.env
+
+# csv
+*.csv
+
+venv
+
+
+chromedriver-linux64
+
+chromedriver-mac64.zip
