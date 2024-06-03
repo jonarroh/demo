@@ -1,11 +1,17 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
 import core.scraper as scraper
 import model.config as config
+from controller.searchcontroller import search
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+app.register_blueprint(search)
+
+@app.route('/ping', methods=['GET', 'POST'])
+def ping():
+  return "pong"
 
 @app.route('/api/people', methods=['POST'])
 def people():

@@ -34,4 +34,5 @@ class ConfigScrap:
     final_page   : Optional[int] = 1
     profiles_to_search : Optional[List[str]] = field(default_factory=list)
     is_search : Optional[bool] = False
+    type: Optional[str] = "linkedin"
      
