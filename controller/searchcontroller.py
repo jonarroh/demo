@@ -25,7 +25,7 @@ def search_route():  # Renombra la función de vista
 
     match executor.is_ok:
         case True:
-            return executor.value.execute()
+            return executor.value.execute(conf)
         case False:
             print(executor.error_message)
 

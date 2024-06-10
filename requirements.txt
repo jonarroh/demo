@@ -10,3 +10,5 @@ webdriver-manager
 flask
 flask-cors
 gunicorn
+sqlalchemy
+pymysql

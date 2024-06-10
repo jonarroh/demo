@@ -35,4 +35,15 @@ class ConfigScrap:
     profiles_to_search : Optional[List[str]] = field(default_factory=list)
     is_search : Optional[bool] = False
     type: Optional[str] = "linkedin"
-     
+
+
+    def to_dict(self):
+        return {
+            "keyword": self.keyword,
+            "location": self.location,
+            "initial_page": self.initial_page,
+            "final_page": self.final_page,
+            "profiles_to_search": self.profiles_to_search,
+            "is_search": self.is_search,
+            "type": self.type
+        }
