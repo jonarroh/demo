@@ -7,7 +7,7 @@ from controller.searchcontroller import search
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-app.register_blueprint(search)
+# app.register_blueprint(search)
 
 @app.route('/ping', methods=['GET', 'POST'])
 def ping():
