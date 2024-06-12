@@ -6,13 +6,17 @@ import os
 Base = declarative_base()
 
 class MySQLAdapter(DB):
-    def __init__(self, database_url=os.getenv('DATABASE_URL')):
+    def __init__(self, database_url=None):
+        if database_url is None:
+            database_url = os.getenv('DATABASE_URL')
         self.engine = create_engine(database_url)
         self.Session = scoped_session(sessionmaker(bind=self.engine))
         Base.metadata.create_all(self.engine)
         self.session = self.Session()
 
-    def connect(self, database_url=os.getenv('DATABASE_URL')):
+    def connect(self, database_url=None):
+        if database_url is None:
+            database_url = os.getenv('DATABASE_URL')
         self.engine = create_engine(database_url)
         self.Session = scoped_session(sessionmaker(bind=self.engine))
         Base.metadata.create_all(self.engine)
@@ -62,3 +66,21 @@ class MySQLAdapter(DB):
 
     def updateMany(self, instances):
         self.updateAll(instances)
+
+    def deleteAll(self, instances):
+        for instance in instances:
+            self.session.delete(instance)
+        self.commit()
+    
+    def deleteMany(self, instances):
+        self.deleteAll(instances)
+    
+    def deleteOne(self, instance):
+        self.session.delete(instance)
+        self.commit()
+
+    def updateOne(self, instance):
+        self.session.merge(instance)
+        self.commit()
+
+    

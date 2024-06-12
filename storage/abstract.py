@@ -60,18 +60,18 @@ class DB(ABC):
     def updateMany(self, *args, **kwargs):
         pass
     
-    @abstractmethod
-    def updateOne(self, *args, **kwargs):
-        pass
+    # @abstractmethod
+    # def updateOne(self, *args, **kwargs):
+    #     pass
     
-    @abstractmethod
-    def deleteAll(self, *args, **kwargs):
-        pass
+    # @abstractmethod
+    # def deleteAll(self, *args, **kwargs):
+    #     pass
     
-    @abstractmethod
-    def deleteMany(self, *args, **kwargs):
-        pass
+    # @abstractmethod
+    # def deleteMany(self, *args, **kwargs):
+    #     pass
     
-    @abstractmethod
-    def deleteOne(self, *args, **kwargs):
-        pass
+    # @abstractmethod
+    # def deleteOne(self, *args, **kwargs):
+    #     pass
