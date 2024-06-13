@@ -5,6 +5,10 @@ import model.config as config
 from controller.searchcontroller import search
 import os
 from dotenv import load_dotenv
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 load_dotenv()
 
@@ -28,7 +32,7 @@ def people():
   conf = config.Config(keywords=data['keywords'], pages=data['pages'], title=data['title'])
   result = scraper.scrappProfiles(conf.__dict__)
   return jsonify(result.to_dict('records'))
-    
+
 
 # is_production = os.environ.get('isDev')
 

@@ -36,8 +36,21 @@ def search_route():
     print(f"is correct executor: {executor.is_ok}")
 
     if executor.is_ok:
-        executor.value.execute(conf)
+        result = executor.value.execute(conf)
+        if result:
+            return {
+                "status": "ok",
+                "data": result
+            }
     else:
-        return "error"
+        return {
+            "status": "error",
+            "message": "Invalid executor type"
+        }
+    
+    return {
+        "status": "error",
+        "message": "An error occurred"
+    }
 
-    return "ok"
+

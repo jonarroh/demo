@@ -8,9 +8,12 @@ import pandas as pd
 class LinkedInExecutor(Executor):
     def execute(self, *args, **kwargs):
         result = Scraper.search_people(args[0])
-        self.save_profiles(result, MySQLAdapter())
-
-        return "LinkedInExecutor"
+        itWork = self.save_profiles(result, MySQLAdapter())
+        print("se guardo el perfil")
+        if itWork:
+            return result.to_dict('records')
+        else:
+            return None
     
     def save_profiles(self, profiles: DataFrame, adapter):
         try:
