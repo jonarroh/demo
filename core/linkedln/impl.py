@@ -12,18 +12,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from utils.const import *
 
 
-def init_cli():
-    mjs = """
-    _________.__              .__  .__  __  .__        ___________.__
-    ____________________  _____       _____  __________________________   
-    \______   \______   \/  _  \     /     \ \_   _____|__    ___/  _  \  
-     |       _/|     ___/  /_\  \   /  \ /  \ |    __)_  |    | /  /_\  \ 
-     |    |   \|    |  /    |    \ /    Y    \|        \ |    |/    |    \\
-     |____|_  /|____|  \____|__  / \____|__  /_______  / |____|\____|__  /
-            \/                 \/          \/        \/                \/ 
-   """
-    print(mjs)
-
 def get_one_profile(driver,curren_url: str):
     # obtener el codigo de la pagina
     src = driver.page_source
@@ -222,7 +210,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 class Scraper:  
     def search_people(config) -> DataFrame:
-      init_cli()
+   
       
       is_search:bool = config.is_search
       profiles_to_search:List[str] = config.profiles_to_search
