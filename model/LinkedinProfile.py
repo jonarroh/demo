@@ -19,4 +19,4 @@ class LinkedInProfile(Base):
     conocimientos_aptitudes = Column(JSON)
     educacion = Column(JSON)
     licencias_certificaciones = Column(JSON)
-    search_at = Column(DateTime, default=datetime.now)
+    search_at = Column(DateTime, default=datetime.datetime.now)

@@ -1,10 +1,9 @@
 import os
 import time
-from typing import Dict, List
+from typing import List
 
 import pandas as pd
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from pandas import DataFrame
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,8 +11,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from utils.const import *
 
-
-load_dotenv()
 
 def init_cli():
     mjs = """
@@ -31,7 +28,6 @@ def get_one_profile(driver,curren_url: str):
     # obtener el codigo de la pagina
     src = driver.page_source
     soup = BeautifulSoup(src, 'lxml')
-    print(soup.prettify())
     #Obtener el ur de la imagen
     div = soup.find('div', class_='pv-top-card__non-self-photo-wrapper ml0')
     img = div.find('img')['src'] if div else "No hay imagen"
@@ -109,7 +105,7 @@ def get_one_profile(driver,curren_url: str):
                 }
                 licencias.append(licencia_data)
     info = {
-       "URL": curren_url,
+       "url": curren_url,
         "nombre": nombre,
         "img": img,
         "description": description,
@@ -123,7 +119,7 @@ def get_one_profile(driver,curren_url: str):
     return info
 
 def scrap_data_from_profile(driver,urls_profiles: List[str]):
-  print("Extrayendo datos de los perfiles")
+  print("Extrayendo datos de los perfiles" + str(urls_profiles))
   data_profiles = []
   for url in urls_profiles:
       driver.get(url)
@@ -152,10 +148,13 @@ def scrap_data_from_profile(driver,urls_profiles: List[str]):
   return data_profiles
 
 def search_by_keyword(driver, config, urls_profiles: List[str]):
-    keywords = config.keywords
+    keywords = config.keyword
     location = config.location
-    initial_page = config.initial_page
-    final_page = config.final_page
+    initial_page = int(config.initial_page)
+    final_page = int(config.final_page)
+
+
+    print(f"Buscando perfiles de {keywords} en {location} desde la página {initial_page} hasta la página {final_page}")
     
     # Abrir la página de búsqueda
     search_url = "https://www.google.com"
@@ -177,8 +176,6 @@ def search_by_keyword(driver, config, urls_profiles: List[str]):
         # Pasear el HTML
         soup = BeautifulSoup(src, 'lxml')
         profiles = soup.find_all('div', class_='MjjYud')
-
-        print(f"Se encontraron {len(profiles)} perfiles")
         
         for profile in profiles:
             link_tag = profile.find('a')
@@ -203,6 +200,9 @@ def search_by_keyword(driver, config, urls_profiles: List[str]):
         except Exception as e:
             print(e)
             break
+    
+    print(f"Se encontraron {len(urls_profiles)} perfiles")
+    print(urls_profiles)
 
     info = scrap_data_from_profile(driver, urls_profiles)
     df = pd.DataFrame(info)
@@ -238,7 +238,14 @@ class Scraper:
       print(f"launching {LOGIN_URL}")
       # Logging into LinkedIn
       driver.get("https://www.linkedin.com/login")
-      time.sleep(2)
+
+      #mandar el html a un archivo
+      with open('login.html', 'w') as file:
+        file.write(driver.page_source)
+
+
+
+      time.sleep(4)
 
       user = os.getenv("LINKEDIN_USER")
       password = os.getenv("LINKEDIN_PASSWORD")
@@ -251,9 +258,14 @@ class Scraper:
       pword = driver.find_element(By.ID, "password")
       pword.send_keys(password)
 
-      driver.find_element(By.XPATH, "//button[@type='submit']").click()
+      #encontrar el boton de login con el aria-label de "Sign in"
+      login_button = driver.find_element(By.XPATH, "//button[@aria-label='Sign in']")
 
+      login_button.click()
 
+      time.sleep(4)
+
+      print(f"is_search: {is_search}")
       if is_search:
         print("Buscando por urls")
         df = search_by_urls(driver,profiles_to_search)

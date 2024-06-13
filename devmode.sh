@@ -5,6 +5,9 @@ set -a
 . ./.env
 set +a
 
+#imprimir las variables de entorno
+echo "isDev: $isDev"
+
 # Verificar el valor de isDev y arrancar el servidor correspondiente
 if [ "$isDev" -eq 1 ]; then
     echo "Iniciando el servidor de desarrollo..."

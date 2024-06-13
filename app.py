@@ -4,11 +4,14 @@ import core.scraper as scraper
 import model.config as config
 from controller.searchcontroller import search
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-# app.register_blueprint(search)
+app.register_blueprint(search)
 
 @app.route('/ping', methods=['GET', 'POST'])
 def ping():
@@ -27,11 +30,14 @@ def people():
   return jsonify(result.to_dict('records'))
     
 
-is_production = os.environ.get('isDev')
+# is_production = os.environ.get('isDev')
+
+# if __name__ == "__main__":
+#   if is_production:
+#     app.run(host='0.0.0.0', port=5000)
+#   else:
+#     app.run(host='0.0.0.0', port=5000, debug=True)
+
 
 if __name__ == "__main__":
-  if is_production:
-    app.run(host='0.0.0.0', port=5000)
-  else:
-    app.run(host='0.0.0.0', port=5000, debug=True)
-
+  app.run(host='0.0.0.0', port=5000, debug=True)

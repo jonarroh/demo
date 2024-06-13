@@ -1,7 +1,26 @@
 from core.abstract import Executor
 from core.linkedln.impl import Scraper
+from storage.mysql.adapter import MySQLAdapter
+from model.LinkedinProfile import LinkedInProfile
+from pandas import DataFrame
+import pandas as pd
 
 class LinkedInExecutor(Executor):
     def execute(self, *args, **kwargs):
-        scrapper = Scraper.search_people(args[0])
+        result = Scraper.search_people(args[0])
+        self.save_profiles(result, MySQLAdapter())
+
         return "LinkedInExecutor"
+    
+    def save_profiles(self, profiles: DataFrame, adapter):
+        try:
+            adapter.connect()
+            profiles = profiles.where(pd.notnull(profiles), None)
+            profiles = profiles.to_dict(orient='records')
+            profiles = [LinkedInProfile(**profile) for profile in profiles]
+            adapter.saveMany(profiles)
+            adapter.close()
+            return True
+        except Exception as e:
+            print(e)
+            return False
