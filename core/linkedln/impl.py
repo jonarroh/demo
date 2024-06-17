@@ -12,6 +12,78 @@ from selenium.webdriver.support import expected_conditions as EC
 from utils.const import *
 
 
+def getExperienceData(driver):
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    sections = soup.find_all('div', id='experience')
+    if not sections:
+        return None
+    #secctions next sibling
+    next_sibling = sections[0].find_next_sibling()
+    #second next sibling
+    second_next_sibling = next_sibling.find_next_sibling()
+    experiencias = []
+    sections = second_next_sibling.find_all('li', class_='artdeco-list__item')
+    for section in sections:
+        duracion = section.find('span', class_='t-14 t-normal t-black--light').get_text(strip=True) if section.find('span', class_='t-14 t-normal t-black--light') else "No hay duracion"
+        empresa = section.find('span', class_='t-14 t-normal').get_text(strip=True) if section.find('span', class_='t-14 t-normal') else "No hay empresa"
+        cargo = section.find('div', class_='display-flex align-items-center mr1 t-bold').get_text(strip=True) if section.find('div', class_='display-flex align-items-center mr1 t-bold') else "No hay cargo" 
+        actividades = section.find('div', class_='FKFqOBZeKsYhiuZKTYcfkNJIpRwfptzrAEOM').get_text(strip=True) if section.find('div', class_='FKFqOBZeKsYhiuZKTYcfkNJIpRwfptzrAEOM') else "No hay actividades"
+        experiencias.append({
+            'duración': duracion,
+            'empresa': empresa,
+            'cargo': cargo,
+            'actividades': actividades
+        })
+    return experiencias
+
+def getLicencias_certificacionesData(driver):
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    sections = soup.find_all('div', id='licenses_and_certifications')
+    if not sections:
+        return None
+    #secctions next sibling
+    next_sibling = sections[0].find_next_sibling()
+    #second next sibling
+    second_next_sibling = next_sibling.find_next_sibling()
+    licencias_certificaciones = []
+    sections = second_next_sibling.find_all('li', class_='artdeco-list__item')
+    for section in sections:
+        img = section.find('img')['src'] if section.find('img') else "No hay imagen"
+        nombre = section.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold').get_text(strip=True) if section.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold') else "No hay nombre"
+        plataforma = section.find('span', class_='t-14 t-normal').get_text(strip=True) if section.find('span', class_='t-14 t-normal') else "No hay plataforma"
+        expedicion = section.find('span', class_='t-14 t-normal t-black--light').get_text(strip=True) if section.find('span', class_='t-14 t-normal t-black--light') else "No hay expedicion"
+        URL_certificacion = section.find('a')['href'] if section.find('a') else "No hay URL"
+        licencias_certificaciones.append({
+            'img': img,
+            'nombre': nombre,
+            'plataforma': plataforma,
+            'expedicion': expedicion,
+            'URL_certificacion': URL_certificacion
+        })
+    return licencias_certificaciones
+
+def getEducationData(driver):
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    sections = soup.find_all('div', id='education')
+    if not sections:
+        return None
+    #secctions next sibling
+    next_sibling = sections[0].find_next_sibling()
+    #second next sibling
+    second_next_sibling = next_sibling.find_next_sibling()
+    educaciones = []
+    sections = second_next_sibling.find_all('li', class_='artdeco-list__item')
+    for section in sections:
+        duracion = section.find('span', class_='pvs-entity__caption-wrapper').get_text(strip=True) if section.find('span', class_='pvs-entity__caption-wrapper') else "No hay duración"
+        carrera = section.find('span', class_='t-14 t-normal').get_text(strip=True) if section.find('span', class_='t-14 t-normal') else "No hay escuela"
+        escuela = section.find('div', class_='display-flex align-items-center mr1 t-bold').text.strip() if section.find('div', class_='display-flex align-items-center mr1 t-bold') else "No hay carrera"
+        educaciones.append({
+            'duración': duracion,
+            'escuela': escuela,
+            'carrera': carrera
+        })
+    return educaciones
+
 def get_one_profile(driver,curren_url: str):
     # obtener el codigo de la pagina
     src = driver.page_source
@@ -35,14 +107,6 @@ def get_one_profile(driver,curren_url: str):
       about = about.text.strip() if about else "No hay about"
       about = about.replace("… ver más", "")
     
-    
-    conocimientos_aptitudes = soup.find_all('div', class_='pvs-entity pvs-entity--padded pvs-list__item--no-padding-in-columns')
-    conocimiento = [{
-      "nombre": conocimiento_aptitud.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold').text.strip() if conocimiento_aptitud.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold') else "No hay nombre",
-      "descripcion": conocimiento_aptitud.find('div', class_='inline-show-more-text inline-show-more-text--is-collapsed inline-show-more-text--is-collapsed-with-line-clamp full-width').text.strip() if conocimiento_aptitud.find('div', class_='inline-show-more-text inline-show-more-text--is-collapsed inline-show-more-text--is-collapsed-with-line-clamp full-width') else "No hay descripcion",
-    }
-    for conocimiento_aptitud in conocimientos_aptitudes
-    ]
     info_idiomas = soup.find_all('section', class_='artdeco-card ember-view relative break-words pb3 mt2')
     info_idiomas = [idioma for idioma in info_idiomas if idioma.find('div', id='languages')]
     idiomas = []
@@ -56,42 +120,9 @@ def get_one_profile(driver,curren_url: str):
                 "nivel": nivel
             }
             idiomas.append(idioma_data)
-    educaciones = soup.find_all('section', class_='artdeco-card ember-view relative break-words pb3 mt2')
-    educaciones = [edu for edu in educaciones if edu.find('div', id='education')]
-    educacion = []
-    for edu in educaciones:
-        items = edu.find_all('li', class_='artdeco-list__item pvs-list__item--line-separated pvs-list__item--one-column')
-        for item in items:
-            img = item.find('img')['src'] if item.find('img') else "No hay imagen"
-            escuela = item.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold').text.strip() if item.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold') else "No hay nombre"
-            especialidad = item.find('span', class_='t-14 t-normal').text.strip() if item.find('span', class_='pv-entity__secondary-title pv-entity__fos t-14 t-black t-normal') else "No hay especialidad"
-            educacion_data = {
-                "img": img,
-                "escuela": escuela,
-                "especialidad": especialidad
-            }
-            
-            educacion.append(educacion_data)
-  
-    licencias_certificaciones = soup.find_all('section', class_='artdeco-card ember-view relative break-words pb3 mt2')
-    licencias = []
-    for licencia in licencias_certificaciones:
-        if licencia.find('div', id='licenses_and_certifications'):
-            items = licencia.find_all('li', class_='artdeco-list__item pvs-list__item--line-separated pvs-list__item--one-column')
-            for item in items:
-                img = item.find('img')['src'] if item.find('img') else "No hay imagen"
-                nombre = item.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold').text.strip() if item.find('div', class_='display-flex align-items-center mr1 hoverable-link-text t-bold') else "No hay nombre"
-                plataforma = item.find('span', class_='t-14 t-normal').text.strip() if item.find('span', class_='t-14 t-normal') else "No hay plataforma"
-                expedicion = item.find('span', class_='t-14 t-normal t-black--light').text.strip() if item.find('span', class_='t-14 t-normal t-black--light') else "No hay expedicion"
-                URL_certificacion = item.find('a')['href'] if item.find('a') else "No hay URL"
-                licencia_data = {
-                    "img": img,
-                    "nombre": nombre,
-                    "plataforma": plataforma,
-                    "expedicion": expedicion,
-                    "URL_certificacion": URL_certificacion
-                }
-                licencias.append(licencia_data)
+    educacion = getEducationData(driver)
+    experiencias = getExperienceData(driver)
+    licencias_certificaciones = getLicencias_certificacionesData(driver)
     info = {
        "url": curren_url,
         "nombre": nombre,
@@ -100,9 +131,9 @@ def get_one_profile(driver,curren_url: str):
         "empresa_actual": empresa_actual,
         "about": about if about else "No hay about",
         "idiomas": idiomas if idiomas else "No hay idiomas",
-        "conocimientos_aptitudes" : conocimiento if conocimiento else "No hay conocimientos y aptitudes",
+        "conocimientos_aptitudes" : experiencias if experiencias else "No hay conocimientos y aptitudes",
         "educacion": educacion if educacion else "No hay educacion",
-        "licencias_certificaciones": licencias if licencias else "No hay licencias y certificaciones"
+        "licencias_certificaciones": licencias_certificaciones if licencias_certificaciones else "No hay licencias y certificaciones"
     }
     return info
 
