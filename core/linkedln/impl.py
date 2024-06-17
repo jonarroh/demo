@@ -252,6 +252,9 @@ class Scraper:
       options.add_argument('--headless')
       options.add_argument('--no-sandbox')
       options.add_argument('--disable-dev-shm-usage')
+      options.add_argument('--ignore-certificate-errors')
+      options.add_argument('--disable-extensions')
+      options.add_argument('--disable-gpu')
       driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
       print(f"launching {LOGIN_URL}")
@@ -271,16 +274,11 @@ class Scraper:
 
       print(f"Logging in with {user} and {password}")
 
-      username = driver.find_element(By.ID, "username")
-      username.send_keys(user)
 
-      pword = driver.find_element(By.ID, "password")
-      pword.send_keys(password)
+      WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "username"))).send_keys(user)
+      WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "password"))).send_keys(password)
+      WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']"))).click()
 
-      #encontrar el boton de login con el aria-label de "Sign in"
-      login_button = driver.find_element(By.XPATH, "//button[@aria-label='Sign in']")
-
-      login_button.click()
 
       time.sleep(4)
 
