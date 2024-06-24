@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request,jsonify
 from model.config import ConfigScrap
 from core.scraper import getExecutor
 import json
@@ -64,9 +64,6 @@ from bs4 import BeautifulSoup
 import time
 import pickle
 import os
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
 
 def getExperienceData(driver):
     soup = BeautifulSoup(driver.page_source, 'lxml')
@@ -143,7 +140,7 @@ def getLicencias_certificacionesData(driver):
     return licencias_certificaciones
 
 
-@app.route('/searcht', methods=['POST'])
+@search.route('/searcht', methods=['POST'])
 def test():
     # Configuración de opciones para el navegador
     options = Options()
@@ -205,6 +202,9 @@ def test():
             "cookies": cookies
         }
     })
+
+
+
 
 
 
