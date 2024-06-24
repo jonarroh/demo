@@ -171,10 +171,14 @@ def test():
 
     # Navegar al perfil de Maura Ledezma
     driver.get("https://www.linkedin.com/in/daniel-ruiz-guti%C3%A9rrez-3a925b65/")
+    cookies = driver.get_cookies()
+    for cookie in cookies:
+        print(f"{cookie['name']}: {cookie['value']}")
     time.sleep(2)
 
-    #esperar 5 segundos para que cargue la pagina
-    time.sleep(5)
+
+
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div/div/div[2]/div/div/main/section[1]/div[2]/div[2]/div[1]/div[1]/span[1]/a/h1')))
 
     # Encontrar el nombre de la persona usando XPath
     nombre = driver.find_element(By.XPATH, '/html/body/div[5]/div[3]/div/div/div[2]/div/div/main/section[1]/div[2]/div[2]/div[1]/div[1]/span[1]/a/h1')
@@ -184,7 +188,7 @@ def test():
 
     certificaciones = getLicencias_certificacionesData(driver)
 
-    cookies = driver.get_cookies()
+    
     driver.quit()
 
     return {
