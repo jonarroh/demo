@@ -150,11 +150,42 @@ def test():
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-gpu')
+    data = '/root/ubuntu/demo/CHROMEDRIVER'
+    options.add_argument("--user-data-dir=" + data)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    
+    # Navegar al perfil de Daniel Ruiz
+    driver.get("https://www.linkedin.com/in/daniel-ruiz-guti%C3%A9rrez-3a925b65/")
+
+
+    certificaciones = getLicencias_certificacionesData(driver)
+
+    driver.quit()
+
+    return jsonify({
+        "status": "ok",
+        "data": {
+            "certificaciones": certificaciones
+        }
+    })
+
+
+@search.route('/login', methods=['POST'])
+def login():
+    # Configuración de opciones para el navegador
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--disable-extensions')
+    options.add_argument('--disable-gpu')
+    data = '/root/meta/demo/CHROMEDRIVER'
+    options.add_argument("--user-data-dir=" + data)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # Iniciar sesión en LinkedIn
     driver.get("https://www.linkedin.com/login")
-    time.sleep(2)
 
     user = "meta.dev@forteinnovation.mx"
     password = "m3t4.dev-321"
@@ -167,41 +198,20 @@ def test():
 
     driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
-    if not os.path.exists("cookies.pkl"):
-        # Guardar las cookies en un archivo
-        pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
-
-    cookie = pickle.load(open("cookies.pkl", "rb"))
-    for c in cookie:
-        driver.add_cookie(c)
-
-    # Navegar al perfil de Daniel Ruiz
-    driver.get("https://www.linkedin.com/in/daniel-ruiz-guti%C3%A9rrez-3a925b65/")
-    # Volver a cargar las cookies
-    for c in cookie:
-        driver.add_cookie(c)
-
-    # Esperar a que la página se cargue completamente
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//h1')))
-
-    # Guardar el source de la página en un archivo HTML
-    source = BeautifulSoup(driver.page_source, 'lxml')
-    with open('source.html', 'w') as file:
-        file.write(str(source))
-
-    cookies = driver.get_cookies()
-
-    certificaciones = getLicencias_certificacionesData(driver)
-
+    if "feed" in driver.current_url:
+        driver.quit()
+        return jsonify({
+            "status": "ok",
+            "message": "Login successful"
+        })
+    
     driver.quit()
-
     return jsonify({
-        "status": "ok",
-        "data": {
-            "certificaciones": certificaciones,
-            "cookies": cookies
-        }
+        "status": "error",
+        "message": "Login failed"
     })
+    
+
 
 
 
