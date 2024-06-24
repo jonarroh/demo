@@ -176,6 +176,12 @@ def test():
         print(f"{cookie['name']}: {cookie['value']}")
     time.sleep(2)
 
+    source = BeautifulSoup(driver.page_source, 'lxml')
+    # mandar el source a un archivo html
+    with open('source.html', 'w') as file:
+        file.write(str(source))
+        
+
 
 
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[5]/div[3]/div/div/div[2]/div/div/main/section[1]/div[2]/div[2]/div[1]/div[1]/span[1]/a/h1')))
