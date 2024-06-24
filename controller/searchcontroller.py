@@ -150,12 +150,28 @@ def test():
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-gpu')
-    data = '/root/ubuntu/demo/CHROMEDRIVER'
+    data = '/home/ubuntu/demo/CHROMEDRIVER'
     options.add_argument("--user-data-dir=" + data)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
     # Navegar al perfil de Daniel Ruiz
     driver.get("https://www.linkedin.com/in/daniel-ruiz-guti%C3%A9rrez-3a925b65/")
+
+    id_needed_login = "public_profile_contextual-sign-in_sign-in-modal"
+
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, id_needed_login
+        )))
+        return jsonify({
+            "status": "error",
+            "message": "Login needed"
+        })
+
+    except Exception as e:
+        pass
+        
+
 
 
     certificaciones = getLicencias_certificacionesData(driver)
@@ -165,7 +181,7 @@ def test():
     return jsonify({
         "status": "ok",
         "data": {
-            "certificaciones": certificaciones
+            "certificaciones": certificaciones if certificaciones else []
         }
     })
 
@@ -180,12 +196,23 @@ def login():
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-extensions')
     options.add_argument('--disable-gpu')
-    data = '/root/meta/demo/CHROMEDRIVER'
+    data = '/home/ubuntu/demo/CHROMEDRIVER'
     options.add_argument("--user-data-dir=" + data)
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     # Iniciar sesión en LinkedIn
     driver.get("https://www.linkedin.com/login")
+
+    if "feed" in driver.current_url:
+        driver.quit()
+        return jsonify({
+            "status": "ok",
+            "message": "Already logged in"
+        })
+
+    source = driver.page_source
+    with open('source.html', 'w') as f:
+        f.write(source)
 
     user = "meta.dev@forteinnovation.mx"
     password = "m3t4.dev-321"
@@ -196,7 +223,7 @@ def login():
     pword = driver.find_element(By.ID, "password")
     pword.send_keys(password)
 
-    driver.find_element(By.XPATH, "//button[@type='submit']").click()
+    driver.find_element(By.XPATH, "/html/body/div/main/div[2]/div[1]/form/div[3]/button").click()
 
     if "feed" in driver.current_url:
         driver.quit()
