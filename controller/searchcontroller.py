@@ -185,7 +185,6 @@ def test():
         }
     })
 
-
 @search.route('/login', methods=['POST'])
 def login():
     # Configuración de opciones para el navegador
@@ -210,12 +209,9 @@ def login():
             "message": "Already logged in"
         })
 
-    source = driver.page_source
-    with open('source.html', 'w') as f:
-        f.write(source)
-
     user = "meta.dev@forteinnovation.mx"
     password = "m3t4.dev-321"
+
 
     username = driver.find_element(By.ID, "username")
     username.send_keys(user)
@@ -225,19 +221,35 @@ def login():
 
     driver.find_element(By.XPATH, "/html/body/div/main/div[2]/div[1]/form/div[3]/button").click()
 
+    # Esperar a que la página se cargue completamente después de intentar iniciar sesión
+    time.sleep(3)
+
+    # Comprobar si el login fue exitoso
     if "feed" in driver.current_url:
         driver.quit()
         return jsonify({
             "status": "ok",
             "message": "Login successful"
         })
-    
+
+    # Capturar mensaje de error
+    error_message = None
+    try:
+        error_element = driver.find_element(By.XPATH, "//div[@role='alert']")
+        error_message = error_element.text
+    except Exception as e:
+        error_message = "No error message found"
+
+    source = driver.page_source
     driver.quit()
     return jsonify({
         "status": "error",
-        "message": "Login failed"
+        "message": "Login failed",
+        "error_message": error_message,
+        "url": driver.current_url,
+        "response": source
     })
-    
+
 
 
 
