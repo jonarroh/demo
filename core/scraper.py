@@ -1,11 +1,13 @@
 from core.api.index import APIExecutor
 from core.linkedln.index import LinkedInExecutor
+from core.jobs.index import JobExecutor
 from utils.Result import Result
 
 # Mapping of executor type to executor instance
 EXECUTOR_MAPPING = {
     "linkedin": LinkedInExecutor(),
-    "api": APIExecutor()
+    "api": APIExecutor(),
+    "job": JobExecutor()
 }
 
 """
