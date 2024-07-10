@@ -9,7 +9,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from utils.const import *
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
@@ -24,7 +23,7 @@ def getOffer(urls: List[str], driver):
         time.sleep(10)
 
         src = driver.page_source
-        print(src)
+        
         with open("source.html", "w") as file:
             file.write(src)
 
@@ -56,17 +55,39 @@ def getOffer(urls: List[str], driver):
 
             results.append([title, company, location, date, url])
 
-        return pd.DataFrame(results, columns=['title', 'company', 'location', 'date', 'url'])
+        for index, result in enumerate(results):
+            print(f"Obteniendo criterios de la oferta {index + 1} de {len(results)}")
+            criteria = get_criteria(driver, result[4])
+            results[index].append(criteria)
+
+        return pd.DataFrame(results, columns=['title', 'company', 'location', 'date', 'url', 'criteria'])
     except Exception as e:
         print(e)
         return pd.DataFrame()
 
+def get_criteria(driver, url):
+    driver.get(url)
+    time.sleep(2)
+    src = driver.page_source
+    soup = BeautifulSoup(src, 'lxml')
+    
+    # Encontrar el ul con description__job-criteria-list
+    ul = soup.find('ul', class_='description__job-criteria-list')
+    
+    # Iterar sobre cada li en el ul y obtener los valores
+    criteria = {'url': url}
+    if ul:
+        for li in ul.find_all('li', class_='description__job-criteria-item'):
+            header = li.find('h3', class_='description__job-criteria-subheader').get_text(strip=True)
+            value = li.find('span', class_='description__job-criteria-text').get_text(strip=True)
+            criteria[header] = value
+
+    return criteria
 
 class Scraper:
     def search_jobs(config) -> DataFrame:
         keyword = config.keyword
         location = config.location
-
 
         options = Options()
         options.add_argument('--headless')
@@ -87,7 +108,6 @@ class Scraper:
         input_search.submit()
 
         for _ in range(1):
-            
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "rcnt")))
 
             src = driver.page_source
@@ -99,7 +119,7 @@ class Scraper:
 
             for profile in profiles:
                 link_tag = profile.find('a')
-                if link_tag is not None:  # Verificar si link_tag no es None
+                if link_tag is not None:
                     profile_linkedin_url = link_tag['href']
                     try:
                         if profile_linkedin_url.startswith('/search'):
@@ -114,7 +134,4 @@ class Scraper:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)
         print("Se encontraron", len(urls_profiles), "perfiles")
-        return getOffer(urls_profiles,driver)
-    
-
-    
+        return getOffer(urls_profiles, driver)
