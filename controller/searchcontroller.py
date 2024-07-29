@@ -2,8 +2,47 @@ from flask import Blueprint, request,jsonify
 from model.config import ConfigScrap
 from core.scraper import getExecutor
 import json
+from storage.mysql.adapter import MySQLAdapter
+from sqlalchemy.sql import text as Text
 
 search = Blueprint('search', __name__)
+
+
+
+@search.route('/history', methods=['GET'])
+def history():
+    adapter = MySQLAdapter()
+    adapter.connect()
+    data = adapter.execute(Text("select * from job_listings group by created_at"))
+    adapter.close()
+    return {
+        "status": "ok",
+        "data": cursor_to_dict(data),
+        "count": data.rowcount
+    }
+
+
+def cursor_to_dict(result):
+    # Asegúrate de que `result` es de tipo Result
+    rows = result.fetchall()
+    columns = result.keys()
+    return [dict(zip(columns, row)) for row in rows]
+
+
+@search.route('/history', methods=['POST'])
+def history_date():
+    date = request.json.get('date', '')
+    adapter = MySQLAdapter()
+    adapter.connect()
+    data = adapter.execute(Text(f"select * from job_listings where created_at = '{date}'"))
+    adapter.close()
+    return {
+        "status": "ok",
+        "data": cursor_to_dict(data),
+        "count": data.rowcount
+    }
+
+
 
 @search.route('/search', methods=['POST'])
 def search_route():

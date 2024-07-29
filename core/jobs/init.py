@@ -3,7 +3,7 @@ from core.jobs.impl import Scraper
 import pandas as pd
 from model.JobListing import JobListing
 from storage.mysql.adapter import MySQLAdapter
-
+import datetime
 class JobExecutor(Executor):
     def execute(self, *args, **kwargs):
         result = Scraper.search_jobs(args[0])
@@ -20,16 +20,18 @@ class JobExecutor(Executor):
             # Convertir el DataFrame en una lista de diccionarios
             jobs_dict = jobs.to_dict(orient='records')
             # Crear instancias de JobListing a partir de los diccionarios
+            created_at =  datetime.datetime.now()
             job_listings = [JobListing(
                 company=job.get('company'),
-                functions=job.get('criteria', {}).get('Función laboral'),
-                sectors=job.get('criteria', {}).get('Sectores'),
-                employment_type=job.get('criteria', {}).get('Tipo de empleo'),
-                criteria_url=job.get('criteria', {}).get('url'),
+                functions=job.get('criteria', {}).get('Función laboral') if job.get('criteria') else 'n/a',
+                sectors=job.get('criteria', {}).get('Sectores') if job.get('criteria') else 'n/a',
+                employment_type=job.get('criteria', {}).get('Tipo de empleo') if job.get('criteria') else 'n/a',
+                criteria_url=job.get('criteria', {}).get('url') if job.get('criteria') else 'n/a',
                 date_posted=job.get('date'),
                 location=job.get('location'),
                 title=job.get('title'),
-                listing_url=job.get('url')
+                listing_url=job.get('url'),
+                created_at=created_at
             ) for job in jobs_dict]
             # Guardar instancias en la base de datos
             adapter.saveMany(job_listings)

@@ -57,7 +57,7 @@ def getOffer(urls: List[str], driver):
 
         for index, result in enumerate(results):
             #liminar a 30 ofertas
-            if index == 30:
+            if index == 5:
                 break
 
             print(f"Obteniendo criterios de la oferta {index + 1} de {len(results)}")

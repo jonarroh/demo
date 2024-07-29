@@ -7,6 +7,7 @@ import pandas as pd
 
 class LinkedInExecutor(Executor):
     def execute(self, *args, **kwargs):
+        return 'this is currently not implemented'
         result = Scraper.search_people(args[0])
         itWork = self.save_profiles(result, MySQLAdapter())
         print("se guardo el perfil")

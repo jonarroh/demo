@@ -34,13 +34,7 @@ def people():
   return jsonify(result.to_dict('records'))
 
 
-# is_production = os.environ.get('isDev')
 
-# if __name__ == "__main__":
-#   if is_production:
-#     app.run(host='0.0.0.0', port=5000)
-#   else:
-#     app.run(host='0.0.0.0', port=5000, debug=True)
 
 
 if __name__ == "__main__":
