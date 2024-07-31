@@ -1,6 +1,6 @@
-from core.api.index import APIExecutor
-from core.linkedln.index import LinkedInExecutor
-from core.jobs.index import JobExecutor
+from core.api.init import APIExecutor
+from core.linkedln.init import LinkedInExecutor
+from core.jobs.init import JobExecutor
 from utils.Result import Result
 
 # Mapping of executor type to executor instance

@@ -1,5 +1,5 @@
 from core.abstract import Executor
-from core.jobs.impl import Scraper
+from core.jobs.core import Scraper
 import pandas as pd
 from model.JobListing import JobListing
 from storage.mysql.adapter import MySQLAdapter

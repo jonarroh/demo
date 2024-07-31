@@ -1,5 +1,5 @@
 from core.abstract import Executor
-from core.linkedln.impl import Scraper
+from core.linkedln.core import Scraper
 from storage.mysql.adapter import MySQLAdapter
 from model.LinkedinProfile import LinkedInProfile
 from pandas import DataFrame
