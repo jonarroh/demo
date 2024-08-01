@@ -9,7 +9,7 @@ class JobExecutor(Executor):
         result = Scraper.search_jobs(args[0])
         data = pd.DataFrame(result)
         self.save_jobs(data, MySQLAdapter())
-
+        print("JobExecutor executed")
         return data.to_dict('records')
     
     def save_jobs(self, jobs: pd.DataFrame, adapter):

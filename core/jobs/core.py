@@ -31,9 +31,10 @@ def getOffer(urls: List[str], driver):
 
         offers = soup.find('ul', {'class': 'jobs-search__results-list'})
 
+
         if offers is None:
             print("No se encontraron ofertas.")
-            return pd.DataFrame()
+            
 
         results = []
 
