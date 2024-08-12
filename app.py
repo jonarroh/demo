@@ -15,7 +15,7 @@ load_dotenv()
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
-CORS(app, resources={r"/*": {"origins": "http://localhost:5500,*"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:5500,https://qawp.app.metaphorce.mx "}})
 
 app.register_blueprint(search)
 
