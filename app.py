@@ -15,9 +15,19 @@ load_dotenv()
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
-CORS(app, resources={r"/*": {"origins": "http://localhost:5500,https://qawp.app.metaphorce.mx "}})
+
+# Configuración de CORS para permitir el encabezado ngrok-skip-browser-warning
+cors = CORS(app, resources={r"/*": {"origins": "https://qawp.app.metaphorce.mx"}}, supports_credentials=True, 
+            expose_headers=["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
+            allow_headers=["Content-Type", "Authorization", "ngrok-skip-browser-warning"])
 
 app.register_blueprint(search)
+
+@app.route('/api/endpoint', methods=['GET', 'POST'])
+def my_endpoint():
+    print("Request Headers:", request.headers)
+    return jsonify({"message": "Request received"})
+
 
 @app.route('/ping', methods=['GET', 'POST'])
 def ping():

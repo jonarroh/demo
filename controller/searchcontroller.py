@@ -17,6 +17,9 @@ def history():
     adapter.connect()
     data = adapter.execute(Text("select * from job_listings group by created_at"))
     adapter.close()
+
+    #do something in second plant
+
     return {
         "status": "ok",
         "data": cursor_to_dict(data),
@@ -97,5 +100,34 @@ def search_route():
 
 
 
+
+
+
+def background_job(data):
+    # Aquí pones el código que quieres ejecutar en segundo plano
+    print(f"Job started with data: {data}")
+    # Simula una tarea larga
+    import time
+    time.sleep(5)
+    print("Job completed")
+    time.sleep(5)
+    print("cleaning up")
+
+from threading import Thread
+
+@search.route('/start_job', methods=['POST', 'GET'])
+def start_job():
+    # Obtén los datos de la solicitud
+    data = request.json if request.method == 'POST' else 0
+
+    # Inicia el trabajo en segundo plano
+    thread = Thread(target=background_job, args=(data,))
+    thread.start()
+
+    # Devuelve una respuesta inmediatamente
+    return jsonify({
+        "status": "ok",
+        "message": "Job started"
+    }), 202
 
 
