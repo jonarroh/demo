@@ -104,7 +104,13 @@ class Scraper:
         options.add_argument('--allow-third-party-cookies')
         options.add_argument('--remote-debugging-port=9222')
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driverPath = ChromeDriverManager().install()
+
+        if "THIRD_PARTY" in driverPath:
+            print("Error al descargar el driver de Chrome")
+            os.system(f"chmod 755 {driverPath}")
+
+        driver = webdriver.Chrome(service=Service(driverPath), options=options)
 
         search_url = "https://www.google.com"
         driver.get(search_url)
