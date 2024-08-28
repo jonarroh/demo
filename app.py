@@ -16,10 +16,7 @@ load_dotenv()
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Configuración de CORS para permitir el encabezado ngrok-skip-browser-warning
-cors = CORS(app, resources={r"/*": {"origins": "https://qawp.app.metaphorce.mx"}}, supports_credentials=True, 
-            expose_headers=["Content-Type", "Authorization", "ngrok-skip-browser-warning"],
-            allow_headers=["Content-Type", "Authorization", "ngrok-skip-browser-warning"])
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(search)
 
