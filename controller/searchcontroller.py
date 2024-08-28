@@ -15,10 +15,8 @@ search = Blueprint('search', __name__)
 def history():
     adapter = MySQLAdapter()
     adapter.connect()
-    data = adapter.execute(Text("select * from job_listings group by created_at"))
+    data = adapter.execute(Text("select * from job_listings group by created_at order by created_at desc"))
     adapter.close()
-
-    #do something in second plant
 
     return {
         "status": "ok",
@@ -46,7 +44,6 @@ def history_date():
         "data": cursor_to_dict(data),
         "count": data.rowcount
     }
-
 
 
 @search.route('/search', methods=['POST'])
@@ -96,10 +93,6 @@ def search_route():
         "status": "error",
         "message": "An error occurred"
     }
-
-
-
-
 
 
 
