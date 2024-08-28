@@ -104,7 +104,12 @@ class Scraper:
         options.add_argument('--allow-third-party-cookies')
         options.add_argument('--remote-debugging-port=9222')
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        chromedriver_path = ChromeDriverManager().install()
+
+        if 'THIRD_PARTY_NOTICES.chromedriver' in chromedriver_path:
+            chromedriver_path = chromedriver_path.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver')
+
+        driver = webdriver.Chrome(service=Service(chromedriver_path), options=options)
 
         search_url = "https://www.google.com"
         driver.get(search_url)
