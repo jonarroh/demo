@@ -4,6 +4,7 @@ from core.scraper import getExecutor
 import json
 from storage.mysql.adapter import MySQLAdapter
 from sqlalchemy.sql import text as Text
+from datetime import datetime, timedelta
 
 
 search = Blueprint('search', __name__)
@@ -15,7 +16,21 @@ search = Blueprint('search', __name__)
 def history():
     adapter = MySQLAdapter()
     adapter.connect()
-    data = adapter.execute(Text("select * from job_listings group by created_at order by created_at desc"))
+
+    # Obtener solo los datos de una semana atrás
+    fecha_actual = datetime.now()
+    fecha_una_semana_atras = fecha_actual - timedelta(days=7)
+    
+    # Corrección de la query
+    QUERY = f"""
+    SELECT * 
+    FROM job_listings 
+    WHERE created_at BETWEEN '{fecha_una_semana_atras.strftime('%Y-%m-%d %H:%M:%S')}' 
+    AND '{fecha_actual.strftime('%Y-%m-%d %H:%M:%S')}' 
+    ORDER BY created_at DESC
+    """
+    
+    data = adapter.execute(Text(QUERY))
     adapter.close()
 
     return {
