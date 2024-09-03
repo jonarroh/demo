@@ -27,6 +27,7 @@ def history():
     FROM job_listings 
     WHERE created_at BETWEEN '{fecha_una_semana_atras.strftime('%Y-%m-%d %H:%M:%S')}' 
     AND '{fecha_actual.strftime('%Y-%m-%d %H:%M:%S')}' 
+    GROUP BY created_at
     ORDER BY created_at DESC
     """
     
